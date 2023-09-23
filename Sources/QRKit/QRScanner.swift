@@ -23,7 +23,7 @@ public struct QRScannerView: UIViewControllerRepresentable {
         self.type = .qr
     }
     
-    public init(result: @escaping (String) -> Void, type: ScanType) {
+    public init(type: ScanType, result: @escaping (String) -> Void) {
         self._delegate = StateObject(wrappedValue: ScannerDelegate(result: result))
         self.type = type
     }
