@@ -1,11 +1,9 @@
 import XCTest
 @testable import QRKit
 
+@available(iOS 15.0.0, *)
 final class QRKitTests: XCTestCase {
     func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
-        XCTAssertEqual(QRKit().text, "Hello, World!")
+        QRCode(data: "")
     }
 }
