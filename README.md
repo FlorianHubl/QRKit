@@ -30,7 +30,7 @@ struct ContentView: View {
     var body: some View {
             QRScannerView(refreshRate: 1) { qr in
                 print(qr)
-        }
+            }
         .ignoresSafeArea()
     }
 }
