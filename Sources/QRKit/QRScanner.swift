@@ -74,6 +74,8 @@ public struct QRScannerView: UIViewControllerRepresentable {
                         self.scannable = true
                     }
                 }
+            case .text(let text):
+                result((text.transcript))
             case .none:
                 break
             case .some(_):
