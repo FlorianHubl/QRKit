@@ -1,23 +1,36 @@
 import SwiftUI
 import VisionKit
 
+public enum ScanType {
+    case qr
+    case text
+}
 
 @available(iOS 16.0, *)
 public struct QRScannerView: UIViewControllerRepresentable {
     
     @StateObject private var delegate: ScannerDelegate
     
+    let type: ScanType
+    
     public init(refreshRate: Double, result: @escaping (String) -> Void) {
         self._delegate = StateObject(wrappedValue: ScannerDelegate(result: result, refreshRate: refreshRate))
+        self.type = .qr
     }
     
     public init(result: @escaping (String) -> Void) {
         self._delegate = StateObject(wrappedValue: ScannerDelegate(result: result))
+        self.type = .qr
+    }
+    
+    public init(result: @escaping (String) -> Void, type: ScanType) {
+        self._delegate = StateObject(wrappedValue: ScannerDelegate(result: result))
+        self.type = type
     }
     
     public func makeUIViewController(context: Context) -> some UIViewController {
         let viewController = DataScannerViewController(
-            recognizedDataTypes: [.barcode(symbologies: [.qr])],
+            recognizedDataTypes: [type == .qr ? .barcode(symbologies: [.qr]) : .text()],
             qualityLevel: .fast,
             recognizesMultipleItems: false,
             isHighFrameRateTrackingEnabled: false,
