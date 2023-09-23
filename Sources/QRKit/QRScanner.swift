@@ -7,8 +7,12 @@ public struct QRScannerView: UIViewControllerRepresentable {
     
     @StateObject private var delegate: ScannerDelegate
     
-    init(refreshRate: Double, result: @escaping (String) -> Void) {
+    public init(refreshRate: Double, result: @escaping (String) -> Void) {
         self._delegate = StateObject(wrappedValue: ScannerDelegate(result: result, refreshRate: refreshRate))
+    }
+    
+    public init(result: @escaping (String) -> Void) {
+        self._delegate = StateObject(wrappedValue: ScannerDelegate(result: result))
     }
     
     public func makeUIViewController(context: Context) -> some UIViewController {
@@ -30,7 +34,7 @@ public struct QRScannerView: UIViewControllerRepresentable {
         
         let result: (String) -> ()
         
-        let refreshRate: Double
+        let refreshRate: Double?
         
         var scannable = true
         
@@ -39,14 +43,23 @@ public struct QRScannerView: UIViewControllerRepresentable {
             self.refreshRate = refreshRate
         }
         
+        init(result: @escaping (String) -> ()) {
+            self.result = result
+            self.refreshRate = nil
+        }
+        
         func dataScanner(_ dataScanner: DataScannerViewController, didUpdate updatedItems: [RecognizedItem], allItems: [RecognizedItem]) {
             switch updatedItems.first {
             case .barcode(let qrCode):
-                guard scannable else {return}
-                scannable = false
+                if refreshRate != nil {
+                    guard scannable else {return}
+                    scannable = false
+                }
                 result((qrCode.payloadStringValue == nil ? "" : qrCode.payloadStringValue)!)
-                Timer.scheduledTimer(withTimeInterval: refreshRate, repeats: false) { _ in
-                    self.scannable = true
+                if let refreshRate = refreshRate {
+                    Timer.scheduledTimer(withTimeInterval: refreshRate, repeats: false) { _ in
+                        self.scannable = true
+                    }
                 }
             case .none:
                 break
