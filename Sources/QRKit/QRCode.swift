@@ -1,7 +1,7 @@
 import SwiftUI
 import CoreImage.CIFilterBuiltins
 
-@available(iOS 15.0.0, *)
+@available(iOS 15.0.0, macOS 12, *)
 public struct QRCode: View {
     
     @Environment(\.colorScheme) var colorScheme
@@ -62,7 +62,11 @@ public struct QRCode: View {
                         .animation(.spring(), value: copyed)
                         .onTapGesture {
                             if copyable {
+                                #if os(macOS)
+                                NSPasteboard.general.setString(String(data: data, encoding: .utf8)!, forType: .string)
+                                #else
                                 UIPasteboard.general.string = String(data: data, encoding: .utf8)
+                                #endif
                                 copyed = true
                                 Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
                                     copyed = false
@@ -98,14 +102,14 @@ public enum QRKitError: Error {
     case error(String)
 }
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, macOS 10.15, *)
 func createQRCode(from data: Data) throws -> Image {
     let context = CIContext()
     let filter = CIFilter.qrCodeGenerator()
     filter.setValue(data, forKey: "inputMessage")
     if let outputImage = filter.outputImage {
         if let cgimg = context.createCGImage(outputImage, from: outputImage.extent) {
-            return Image(uiImage: UIImage(cgImage: cgimg)).interpolation(.none)
+            return Image(cgimg, scale: 1, label: Text(""))
         }else {
             print("One")
         }

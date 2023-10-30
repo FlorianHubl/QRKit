@@ -6,6 +6,8 @@ public enum ScanType {
     case text
 }
 
+#if os(iOS)
+
 @available(iOS 16.0, *)
 public struct QRScannerView: UIViewControllerRepresentable {
     
@@ -85,3 +87,4 @@ public struct QRScannerView: UIViewControllerRepresentable {
     }
 }
 
+#endif
