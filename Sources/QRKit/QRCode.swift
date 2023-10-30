@@ -109,7 +109,7 @@ func createQRCode(from data: Data) throws -> Image {
     filter.setValue(data, forKey: "inputMessage")
     if let outputImage = filter.outputImage {
         if let cgimg = context.createCGImage(outputImage, from: outputImage.extent) {
-            return Image(cgimg, scale: 1, label: Text(""))
+            return Image(cgimg, scale: 1, label: Text("")).interpolation(.none)
         }else {
             print("One")
         }
